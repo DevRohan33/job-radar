@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Local run artifacts. The JD cache is worth keeping if you want it - it saves
+# refetching - but it is regenerable, so it stays out of git by default.
+state/jd_cache/
+state/llm_cache/
+state/jobs.csv
+
+# Your CV is personal - it holds contact details and employment history, and
+# this repository is public. profile/cv.example.md is the committed template.
+profile/cv.md
+
+# Service-account keys and any other credential file. Belt and braces: the key
+# should live outside this folder entirely (see SETUP.md).
+*service*account*.json
+*credentials*.json
+*-key.json
+client_secret*.json
+.secrets/

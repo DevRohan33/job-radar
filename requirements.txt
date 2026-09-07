@@ -1,0 +1,14 @@
+# Stage 1-2: email collection and parsing
+selectolax>=0.3.21
+pydantic>=2.6
+
+# Stage 3: JD enrichment
+httpx>=0.27
+
+# Stage 4: scoring (rule-based needs no extra deps; the LLM layer is optional)
+PyYAML>=6.0
+openai>=1.40
+
+# Stage 5: publishing
+gspread>=6.0
+google-auth>=2.28

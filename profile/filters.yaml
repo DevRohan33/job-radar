@@ -1,0 +1,127 @@
+# Hard gates + scoring weights for Job Radar.
+# Gates run BEFORE scoring: anything failing a gate never reaches the LLM and
+# never costs a token. Weights rank whatever survives.
+
+# ---------------------------------------------------------------------------
+# TARGET ROLES — drives the LinkedIn saved searches and the title matcher.
+# ---------------------------------------------------------------------------
+target_roles:
+  primary: # your genuine edge — score bonus applies
+    - "AI Engineer"
+    - "LLM Engineer"
+    - "GenAI Engineer"
+    - "Generative AI Engineer"
+    - "Applied AI Engineer"
+    - "AI/ML Engineer"
+    - "Machine Learning Engineer"
+    - "Agent Engineer"
+  secondary: # large, well-matched pool
+    - "Backend Engineer"
+    - "Backend Developer"
+    - "Python Developer"
+    - "Software Engineer - Backend"
+    - "API Developer"
+    - "Platform Engineer"
+
+title_must_not_contain:
+  - senior
+  - staff
+  - principal
+  - lead
+  - architect
+  - manager
+  - director
+  - head of
+  - sre
+  - "site reliability"
+  - devops
+  - qa
+  - "quality assurance"
+  - "test engineer"
+  - support
+  - "sales engineer"
+  - "solutions consultant"
+  - frontend
+  - "front-end"
+  - "ui developer"
+  - "java developer"
+  - ".net"
+  - dotnet
+  - php
+  - salesforce
+  - sap abap
+
+# ---------------------------------------------------------------------------
+# LOCATION GATE
+# ---------------------------------------------------------------------------
+locations:
+  accept_onsite:
+    - Bangalore
+    - Bengaluru
+    - Hyderabad
+    - Pune
+    - Gurgaon
+    - Gurugram
+    - Noida
+    - Delhi
+    - "New Delhi"
+    - NCR
+  accept_remote_scopes:
+    - india
+    - global
+  # Kolkata is intentionally NOT in accept_onsite — you opted for relocation.
+  # Add "Kolkata" and "Howrah" to the list above if you change your mind.
+  reject_if_onsite_elsewhere: true
+
+work_mode_preference: # scoring order, not a gate
+  - remote
+  - hybrid
+  - onsite
+
+# ---------------------------------------------------------------------------
+# SENIORITY GATE — most JDs overstate. Reject only at 4+ years required.
+# ---------------------------------------------------------------------------
+experience:
+  max_years_required: 3
+  reject_at_or_above: 4
+  accept_internships: false
+  accept_contract: true
+
+# ---------------------------------------------------------------------------
+# COMPENSATION — signal only, no floor. Most Indian listings omit salary, so a
+# hard floor would silently discard good roles.
+# ---------------------------------------------------------------------------
+compensation:
+  hard_floor_lpa: null
+  reference_lpa: 12 # scores above this get the full comp component
+  reject_unpaid: true # "equity only", "unpaid", "stipend only"
+
+company_blocklist: [] # add names here; matched case-insensitively
+
+# ---------------------------------------------------------------------------
+# SCORING WEIGHTS — must sum to 100. Tuned for an early-career AI/backend
+# candidate: freshness up (junior roles close fast), comp down (no floor set).
+# ---------------------------------------------------------------------------
+weights:
+  must_have_skills: 33
+  seniority_fit: 15
+  adjacent_skills: 13
+  ai_domain_bonus: 12
+  freshness: 13
+  location_mode: 9
+  compensation: 5
+
+verdict_bands:
+  apply_now: 85
+  strong: 70
+  worth_a_look: 55
+  # below 55 -> archive
+
+# ---------------------------------------------------------------------------
+# ENRICHMENT BUDGET — how many full JDs to fetch per run (see Trap 2).
+# ---------------------------------------------------------------------------
+enrichment:
+  max_jd_fetches_per_run: 15
+  min_delay_seconds: 4
+  max_delay_seconds: 11
+  skip_if_rule_score_below: 45

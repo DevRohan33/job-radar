@@ -1,0 +1,235 @@
+# Skills profile for SK Rohan Parveag
+# Tiers drive the "must-have overlap" and "adjacent skills" components of the score.
+# weight = how much credit a JD gets for asking for this skill.
+# Edit freely — the scorer reloads this file on every run, no code change needed.
+
+candidate:
+  name: "SK Rohan Parveag"
+  github: "github.com/DevRohan33"
+  base_location: "Sodepur, Kolkata, West Bengal, India"
+  # Feb 2025 internship start; Jun/Jul 2025 full-time. Recomputed at runtime.
+  experience_start: "2025-02-01"
+  fulltime_start: "2025-07-01"
+  degree: "BTech Computer Science & Engineering, MAKAUT / Elitte College of Engineering (2023-2026)"
+  current_title: "Junior Software Engineer, Design Intelligence LLP"
+
+# ---------------------------------------------------------------------------
+# TIER 1 — CORE. Production-evidenced. A JD asking for these is a strong match.
+# ---------------------------------------------------------------------------
+core:
+  weight: 1.0
+  skills:
+    - python
+    - fastapi
+    - django
+    - rag
+    - langchain
+    - langgraph
+    - llm
+    - openai_api
+    - rest_api
+    - postgresql
+    - docker
+
+# ---------------------------------------------------------------------------
+# TIER 2 — STRONG. Real shipped usage, less depth than core.
+# ---------------------------------------------------------------------------
+strong:
+  weight: 0.75
+  skills:
+    - multi_agent
+    - mcp
+    - vector_db
+    - react
+    - pandas
+    - numpy
+    - aws
+    - s3
+    - etl
+    - system_design
+    - git
+    - flask
+    - mongodb
+    - firestore
+    - flutter
+    - prompt_engineering
+
+# ---------------------------------------------------------------------------
+# TIER 3 — FAMILIAR. Working knowledge; would not lead with it in an interview.
+# ---------------------------------------------------------------------------
+familiar:
+  weight: 0.4
+  skills:
+    - nextjs
+    - threejs
+    - kubernetes
+    - ci_cd
+    - vercel
+    - dokploy
+    - huggingface
+    - matplotlib
+    - sql
+    - c_lang
+    - evals
+    - linux
+
+# ---------------------------------------------------------------------------
+# TIER 4 — LEARNABLE. Not yours yet, but close enough that a JD requiring them
+# should not tank the score. These are the ones worth actually learning.
+# ---------------------------------------------------------------------------
+learnable:
+  weight: 0.25
+  skills:
+    - typescript
+    - nodejs
+    - redis
+    - celery
+    - pytest
+    - graphql
+    - kafka
+    - terraform
+    - grafana
+    - go
+
+# ---------------------------------------------------------------------------
+# GAPS — tracked explicitly so the skill-gap heatmap can rank them by how often
+# they block a job you'd otherwise have scored well on.
+# ---------------------------------------------------------------------------
+tracked_gaps:
+  - typescript
+  - nodejs
+  - pytest
+  - redis
+  - celery
+  - kubernetes
+  - kafka
+  - observability
+  - go
+
+# ---------------------------------------------------------------------------
+# SYNONYMS — the single most important block for match accuracy.
+# JD text is normalized through this map before comparison, so "Retrieval
+# Augmented Generation", "RAG" and "retrieval-augmented" all collapse to one skill.
+# ---------------------------------------------------------------------------
+synonyms:
+  python: [python3, "python 3", py]
+  fastapi: ["fast api", "fast-api"]
+  django: ["django rest framework", drf]
+  flask: []
+  rag:
+    [
+      "retrieval augmented generation",
+      "retrieval-augmented generation",
+      "retrieval augmented",
+      "rag pipeline",
+      "rag pipelines",
+    ]
+  langchain: ["lang chain", "langchain.js"]
+  langgraph: ["lang graph"]
+  llm:
+    [
+      "large language model",
+      "large language models",
+      "llms",
+      genai,
+      "gen ai",
+      "gen-ai",
+      "generative ai",
+      "foundation model",
+      "foundation models",
+    ]
+  openai_api:
+    [
+      openai,
+      "open ai",
+      "gpt-4",
+      gpt4,
+      "gpt-4o",
+      "chatgpt api",
+      anthropic,
+      claude,
+      gemini,
+    ]
+  multi_agent:
+    [
+      "multi-agent",
+      "multi agent",
+      "agentic",
+      "agent framework",
+      "ai agents",
+      "autonomous agents",
+      "tool calling",
+      "tool-calling",
+      crewai,
+      autogen,
+    ]
+  mcp: ["model context protocol", "model-context-protocol"]
+  vector_db:
+    [
+      "vector database",
+      "vector databases",
+      "vector store",
+      "vector search",
+      "embedding store",
+      pinecone,
+      weaviate,
+      qdrant,
+      chroma,
+      chromadb,
+      faiss,
+      milvus,
+      pgvector,
+    ]
+  rest_api:
+    ["rest apis", "restful", "restful api", "api development", "api design"]
+  postgresql: [postgres, psql, "postgre sql", rds]
+  mongodb: [mongo, "mongo db"]
+  react: ["react.js", reactjs, "react js"]
+  nextjs: ["next.js", "next js"]
+  typescript: [ts, "type script"]
+  nodejs: ["node.js", "node js", node, express, "express.js"]
+  docker: [containerization, containers, "docker compose"]
+  kubernetes: [k8s, eks, gke]
+  aws: ["amazon web services", ec2, lambda, ecs]
+  s3: ["amazon s3", "object storage", wasabi, minio]
+  ci_cd:
+    [
+      "ci/cd",
+      cicd,
+      "continuous integration",
+      "continuous deployment",
+      "github actions",
+      jenkins,
+    ]
+  etl: ["data pipeline", "data pipelines", "elt", "data engineering", airflow]
+  pandas: [dataframe, dataframes]
+  numpy: []
+  sql: ["sql queries", "query optimization"]
+  system_design:
+    [
+      "system architecture",
+      "software architecture",
+      "distributed systems",
+      scalability,
+    ]
+  prompt_engineering:
+    ["prompt design", prompting, "few-shot", "chain of thought"]
+  evals: [evaluation, benchmarking, "llm evaluation", "model evaluation"]
+  huggingface: ["hugging face", transformers]
+  pytest: ["unit testing", "unit tests", tdd, "test coverage", unittest]
+  redis: [caching, memcached]
+  celery: ["task queue", "background jobs", "async workers", rq]
+  kafka: ["event streaming", "message queue", rabbitmq, pubsub]
+  graphql: [apollo]
+  terraform: ["infrastructure as code", iac, pulumi]
+  grafana: [prometheus, observability, "monitoring", datadog]
+  flutter: [dart]
+  firestore: [firebase, "cloud firestore"]
+  threejs: ["three.js", webgl]
+  c_lang: ["c programming"]
+  go: [golang]
+  git: [github, gitlab, "version control"]
+  linux: [unix, bash, shell]
+  vercel: []
+  dokploy: [vps, "self-hosted deployment"]
+  matplotlib: [plotly, seaborn, "data visualization"]

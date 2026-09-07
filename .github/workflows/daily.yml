@@ -1,0 +1,141 @@
+name: Job Radar - daily run
+
+on:
+  schedule:
+    # 01:45 UTC = 07:15 IST. An odd minute on purpose: everything in the world
+    # is scheduled at :00, and GitHub queues rather than guarantees cron runs.
+    - cron: "45 1 * * *"
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "Days of email history to read"
+        required: false
+        default: "2"
+      dry_run:
+        description: "Score but write nothing"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write   # heartbeat commit keeps the cron alive past 60 days
+  issues: write     # zero-yield and failure alarms
+
+concurrency:
+  group: job-radar-daily
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Job descriptions never change once fetched, so a permanent cache means
+      # each posting costs LinkedIn exactly one request, ever.
+      - name: Restore JD cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            state/jd_cache
+            state/llm_cache
+          key: job-radar-cache-${{ github.run_id }}
+          restore-keys: job-radar-cache-
+
+      - name: Run the pipeline
+        id: pipeline
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LLM_ENABLED: ${{ vars.LLM_ENABLED || 'false' }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'gpt-4o-mini' }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          ENRICH_TOP_N: ${{ vars.ENRICH_TOP_N || '12' }}
+          LOOKBACK_DAYS: ${{ inputs.lookback_days || '2' }}
+          PYTHONPATH: src
+        run: |
+          set +e
+          python -m job_radar run ${{ inputs.dry_run && '--dry-run' || '' }} | tee run.log
+          echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-log-${{ github.run_number }}
+          path: |
+            run.log
+            state/jobs.csv
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # Trap 3: GitHub disables cron workflows in repos with no activity for 60
+      # days. A one-line heartbeat commit means this repo is never idle.
+      - name: Commit heartbeat
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name "job-radar-bot"
+          git config user.email "actions@github.com"
+          git add state/last_run.txt || true
+          git diff --staged --quiet || git commit -m "chore: daily run heartbeat [skip ci]"
+          git push || echo "nothing to push"
+
+      - name: Open an issue if the parser yielded nothing
+        if: steps.pipeline.outputs.exit_code == '2'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "Job Radar: zero jobs parsed";
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", labels: "job-radar",
+            });
+            if (open.some(i => i.title === title)) return;
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title,
+              labels: ["job-radar"],
+              body: [
+                "Alert emails arrived but the parser extracted **zero** job cards.",
+                "LinkedIn most likely changed the alert email HTML.",
+                "",
+                `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+                "",
+                "To fix:",
+                "1. `python -m job_radar save-fixtures --days 3`",
+                "2. `python -m job_radar cards --fixtures tests/fixtures`",
+                "3. Adjust `src/job_radar/sources/parse.py`, add the new fixture to the tests.",
+              ].join("\n"),
+            });
+
+      - name: Open an issue if the run crashed
+        if: failure() || steps.pipeline.outputs.exit_code == '1'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `Job Radar: run failed on ${new Date().toISOString().slice(0,10)}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title,
+              labels: ["job-radar"],
+              body: `The daily run failed.\n\n${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Fail the job when the pipeline failed
+        if: steps.pipeline.outputs.exit_code != '0'
+        run: exit 1

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "job-radar"
+version = "1.0.0"
+description = "Daily LinkedIn job-alert pipeline: Gmail IMAP -> CV-aware scoring -> Google Sheets"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "SK Rohan Parveag", email = "parveagr@gmail.com" }]
+keywords = ["job-search", "linkedin", "automation", "imap", "google-sheets", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
+    "Topic :: Text Processing :: Markup :: HTML",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/DevRohan33/job-radar"
+Repository = "https://github.com/DevRohan33/job-radar"
+Issues = "https://github.com/DevRohan33/job-radar/issues"
+Documentation = "https://github.com/DevRohan33/job-radar/blob/main/docs/DESIGN.md"
+Author = "https://rohanparveag.online"
+
+[project.scripts]
+job-radar = "job_radar.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
