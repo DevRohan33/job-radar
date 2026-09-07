@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from job_radar.profile import Filters, SkillsProfile, parse_filters, parse_skills  # noqa: E402
-from tests.make_fixture import build  # noqa: E402
+from make_fixture import build  # noqa: E402
 
 # A miniature version of profile/skills.yaml and profile/filters.yaml, in the
 # same shape. Tests use these so tuning your real profile never breaks the suite.
