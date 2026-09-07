@@ -147,9 +147,16 @@ Push the repo, then add the secrets under
 | `GMAIL_APP_PASSWORD` | the 16-character app password |
 | `SHEET_ID` | the long id from the sheet URL |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | the **entire contents** of the downloaded JSON key file |
+| `CV_MARKDOWN` | the **entire contents** of your `profile/cv.md` |
 | `OPENAI_API_KEY` | only if you turn on AI scoring |
 | `TELEGRAM_BOT_TOKEN` | only if you want the morning digest |
 | `TELEGRAM_CHAT_ID` | only if you want the morning digest |
+
+`CV_MARKDOWN` is the one that is easy to forget. `profile/cv.md` is gitignored,
+so it is **not** in the pushed repository — without this secret the runner has no
+CV at all, and the run still exits `0`. It just scores worse: the CV↔JD
+similarity term drops to zero and the AI layer compares every job against an
+empty CV. Paste the whole file, formatting and all.
 
 **Variables** (tab: *Variables* — these are not secret)
 

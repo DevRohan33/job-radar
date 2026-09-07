@@ -12,7 +12,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from .config import STATE_DIR, Settings
+from .config import PROFILE_DIR, STATE_DIR, Settings
 from .profile import Filters, SkillsProfile, load_cv, load_filters, load_skills
 from .enrich.linkedin_guest import EnrichmentReport, enrich_jobs
 from .models import Job
@@ -107,6 +107,15 @@ def run(settings: Settings, options: RunOptions | None = None) -> RunReport:
     skills: SkillsProfile = load_skills()
     filters: Filters = load_filters()
     cv_text = load_cv()
+    if not cv_text.strip():
+        # Degrades rather than fails - but silently, and only the log will ever
+        # say so. Without a CV the similarity term of adjacent_skills scores a
+        # flat zero and the LLM judges every job against an empty <cv> block.
+        log.warning(
+            "no CV loaded from %s - scoring without CV<->JD similarity, "
+            "and the AI layer has nothing to compare against",
+            PROFILE_DIR / "cv.md",
+        )
     _apply_profile_budget(settings, filters)
 
     jobs = collect(settings, options, report)

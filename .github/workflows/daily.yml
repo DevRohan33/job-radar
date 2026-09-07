@@ -49,9 +49,10 @@ jobs:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          CV_MARKDOWN: ${{ secrets.CV_MARKDOWN }}
         run: |
           missing=""
-          for name in GMAIL_USER GMAIL_APP_PASSWORD SHEET_ID GOOGLE_SERVICE_ACCOUNT_JSON; do
+          for name in GMAIL_USER GMAIL_APP_PASSWORD SHEET_ID GOOGLE_SERVICE_ACCOUNT_JSON CV_MARKDOWN; do
             if [ -z "${!name}" ]; then missing="$missing $name"; fi
           done
           if [ -n "$missing" ]; then
@@ -61,7 +62,22 @@ jobs:
             echo "Full walkthrough: SETUP.md section 6."
             exit 1
           fi
-          echo "All four required secrets are present."
+          echo "All five required secrets are present."
+
+      # profile/cv.md is gitignored - it holds contact details and employment
+      # history, and this repository is public. Without this step the runner has
+      # no CV at all: load_cv() returns "", the CV<->JD similarity term scores
+      # zero, and the LLM judges every job against an empty <cv> block.
+      - name: Write the CV from its secret
+        env:
+          CV_MARKDOWN: ${{ secrets.CV_MARKDOWN }}
+        run: |
+          printf '%s' "$CV_MARKDOWN" > profile/cv.md
+          if grep -q "Replace everything below" profile/cv.md; then
+            echo "::error title=CV is still the template::CV_MARKDOWN holds cv.example.md, not your CV."
+            exit 1
+          fi
+          echo "cv.md written ($(wc -w < profile/cv.md) words)."
 
       # Job descriptions never change once fetched, so a permanent cache means
       # each posting costs LinkedIn exactly one request, ever.
