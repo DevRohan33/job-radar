@@ -1,1 +1,1 @@
-2026-09-26 emails=21 cards=92 published=27 scored=27
+2026-09-27 emails=18 cards=91 published=20 scored=20
